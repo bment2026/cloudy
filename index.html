@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vibie Live — Cloudy Crew Admin CMS v7 YouTube Visible</title>
+  <title>Vibie Live — Cloudy Crew Admin CMS v8 VJ Schedule</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -880,6 +880,104 @@
       background: linear-gradient(135deg, #ff6680, #ff1644);
     }
 
+
+    .schedule-btn {
+      background: linear-gradient(135deg, rgba(144,200,255,.20), rgba(185,149,255,.16));
+      border-color: rgba(144,200,255,.32);
+    }
+
+    .schedule-view {
+      white-space: pre-wrap;
+      line-height: 1.8;
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      border-radius: 18px;
+      padding: 14px;
+      min-height: 120px;
+    }
+
+    .vj-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 170;
+      background: rgba(3, 7, 18, .80);
+      backdrop-filter: blur(18px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .vj-overlay.show {
+      display: flex;
+    }
+
+    .vj-login-card,
+    .vj-dashboard {
+      width: min(720px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 80% 10%, rgba(144,200,255,.16), transparent 30%),
+        radial-gradient(circle at 20% 30%, rgba(255,79,119,.10), transparent 34%),
+        rgba(8, 15, 32, .92);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .vj-dashboard {
+      display: none;
+    }
+
+    .vj-dashboard.show {
+      display: block;
+    }
+
+    .vj-login-card h2,
+    .vj-dashboard h2,
+    .schedule-modal h2 {
+      font-family: "Playfair Display", serif;
+      font-size: 42px;
+      line-height: .95;
+      margin-bottom: 10px;
+    }
+
+    .vj-login-card p,
+    .vj-dashboard p,
+    .schedule-modal p {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .schedule-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 165;
+      background: rgba(3, 7, 18, .78);
+      backdrop-filter: blur(18px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .schedule-overlay.show {
+      display: flex;
+    }
+
+    .schedule-modal {
+      width: min(680px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 84% 10%, rgba(144,200,255,.14), transparent 30%),
+        rgba(8, 15, 32, .94);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
     .media-overlay {
       position: fixed;
       inset: 0;
@@ -1052,6 +1150,7 @@
     </nav>
 
     <div class="top-actions">
+      <button class="btn ghost" id="vjOpenBtn">VJ Login</button>
       <button class="btn ghost" id="adminOpenBtn">Admin Login</button>
       <a class="btn primary" href="#hosts">Explore</a>
     </div>
@@ -1132,7 +1231,7 @@
 
               <div class="actions">
                 <button class="action primary" onclick="toast('ติดตามแล้ว ✨')">＋ Follow</button>
-                <button class="action" onclick="toast('เปิดตารางไลฟ์')">📅 Schedule</button>
+                <button class="action schedule-btn" id="scheduleBtn" type="button">📅 Schedule</button>
                 <button class="action" onclick="toast('ส่งของขวัญแล้ว 🎁')">🎁 Send Gift</button>
                 <button class="action youtube-btn" id="youtubeBtn" type="button" style="display:none;">▶ YouTube</button>
               </div>
@@ -1283,6 +1382,11 @@
               </div>
 
               <div class="field full">
+                <label>Schedule</label>
+                <textarea id="scheduleInput" placeholder="Monday - Friday 8:00 PM - 11:00 PM"></textarea>
+              </div>
+
+              <div class="field full">
                 <label>Bio</label>
                 <textarea id="bioInput" placeholder="Short profile description"></textarea>
               </div>
@@ -1329,6 +1433,73 @@
   </div>
 
 
+
+  <div class="vj-overlay" id="vjOverlay">
+    <div class="vj-login-card" id="vjLoginCard">
+      <h2>VJ Login</h2>
+      <p>เข้าสู่ระบบสำหรับ VJ เพื่อแก้ไข Schedule ของตัวเอง</p>
+
+      <form id="vjLoginForm">
+        <div class="field">
+          <label>VJ Username</label>
+          <input id="vjLoginUser" autocomplete="username" placeholder="vj_bankky" />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input id="vjLoginPass" type="password" autocomplete="current-password" placeholder="bankky_test1234" />
+        </div>
+        <div class="actions">
+          <button class="btn primary" type="submit">Login</button>
+          <button class="btn" type="button" id="vjLoginCloseBtn">Cancel</button>
+        </div>
+      </form>
+
+      <div class="admin-note">
+        Test VJ credential:<br>
+        <b>login:</b> vj_bankky<br>
+        <b>password:</b> bankky_test1234<br>
+        <b>Linked VJ ID:</b> BANKKY
+      </div>
+    </div>
+
+    <div class="vj-dashboard" id="vjDashboard">
+      <div style="display:flex;align-items:start;justify-content:space-between;gap:14px;margin-bottom:14px;">
+        <div>
+          <h2 id="vjDashTitle">VJ Schedule</h2>
+          <p id="vjDashSub">แก้ไข Schedule ของตัวเอง แล้วกด Save</p>
+        </div>
+        <div class="actions">
+          <button class="btn small" type="button" id="vjDashCloseBtn">Close</button>
+          <button class="btn small danger" type="button" id="vjLogoutBtn">Logout</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Schedule</label>
+        <textarea id="vjScheduleInput" placeholder="เช่น Monday - Friday 8:00 PM - 11:00 PM"></textarea>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" type="button" id="vjSaveScheduleBtn">Save Schedule</button>
+      </div>
+
+      <div class="admin-note">
+        เมื่อกด Save ข้อมูลจะอัปเดตที่ปุ่ม Schedule ของ VJ คนนั้นทันที
+      </div>
+    </div>
+  </div>
+
+  <div class="schedule-overlay" id="scheduleOverlay">
+    <div class="schedule-modal">
+      <h2 id="scheduleTitle">Schedule</h2>
+      <p>ตารางเวลา Live ของ VJ</p>
+      <div class="schedule-view" id="scheduleView"></div>
+      <div class="actions" style="margin-top:16px;">
+        <button class="btn primary" type="button" id="scheduleCloseBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
   <div class="media-overlay" id="mediaOverlay">
     <div class="media-modal">
       <div class="media-head">
@@ -1357,6 +1528,13 @@
     const ADMIN_PASS = 'CD@#112233445566';
     const STORAGE_KEY = 'cloudyCrewVJData_v1';
 
+    const VJ_ACCOUNTS = {
+      vj_bankky: {
+        password: 'bankky_test1234',
+        vjId: 'BANKKY'
+      }
+    };
+
     const defaultHosts = [
       {
         uid: cryptoId(),
@@ -1375,7 +1553,8 @@
         views: '8.9M+',
         hours: '1.8K+',
         rating: '5.0',
-        youtube: ''
+        youtube: '',
+        schedule: 'Schedule coming soon.'
       },
       {
         uid: cryptoId(),
@@ -1394,7 +1573,8 @@
         views: '11.2M+',
         hours: '2.3K+',
         rating: '5.0',
-        youtube: 'https://youtu.be/bvTDFZGQKP4'
+        youtube: 'https://youtu.be/bvTDFZGQKP4',
+        schedule: 'Monday - Friday\n8:00 PM - 11:00 PM\nSpecial live: Saturday 9:00 PM'
       },
       {
         uid: cryptoId(),
@@ -1413,7 +1593,8 @@
         views: '7.4M+',
         hours: '1.4K+',
         rating: '5.0',
-        youtube: ''
+        youtube: '',
+        schedule: 'Schedule coming soon.'
       }
     ];
 
@@ -1422,6 +1603,7 @@
     let tempBanner = '';
     let tempProfile = '';
     let loggedIn = false;
+    let loggedInVj = null;
 
     const $ = selector => document.querySelector(selector);
     const $$ = selector => document.querySelectorAll(selector);
@@ -1458,8 +1640,13 @@
           if (!h.youtube) {
             h.youtube = 'https://youtu.be/bvTDFZGQKP4';
           }
+
+          if (!h.schedule) {
+            h.schedule = 'Monday - Friday\n8:00 PM - 11:00 PM\nSpecial live: Saturday 9:00 PM';
+          }
         }
 
+        if (!h.schedule) h.schedule = 'Schedule coming soon.';
         return h;
       });
 
@@ -1541,6 +1728,11 @@
 
       $('#tags').innerHTML = (h.tags || []).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('');
 
+      const scheduleBtn = $('#scheduleBtn');
+      if (scheduleBtn) {
+        scheduleBtn.onclick = () => openSchedule(h.uid);
+      }
+
       const img = $('#profileImage');
       img.src = h.profile || h.banner;
       img.alt = h.name;
@@ -1618,6 +1810,7 @@
       $('#hoursInput').value = h.hours || '';
       $('#ratingInput').value = h.rating || '';
       $('#youtubeInput').value = h.youtube || '';
+      $('#scheduleInput').value = h.schedule || '';
       $('#bioInput').value = h.bio || '';
       $('#tagsInput').value = (h.tags || []).join(', ');
       const bannerPreview = $('#bannerPreview');
@@ -1662,6 +1855,7 @@
       $('#crewInput').value = 'Cloudy Crew';
       $('#themeInput').value = 'blue';
       $('#youtubeInput').value = '';
+      $('#scheduleInput').value = '';
       $('#bannerPreview').removeAttribute('src');
       $('#profilePreview').removeAttribute('src');
       tempBanner = '';
@@ -1809,7 +2003,8 @@
         views: $('#viewsInput').value.trim() || '—',
         hours: $('#hoursInput').value.trim() || '—',
         rating: $('#ratingInput').value.trim() || '5.0',
-        youtube: $('#youtubeInput').value.trim()
+        youtube: $('#youtubeInput').value.trim(),
+        schedule: $('#scheduleInput').value.trim() || 'Schedule coming soon.'
       };
 
       if (!record.name || !record.id) {
@@ -1884,8 +2079,129 @@
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
         if ($('#mediaOverlay').classList.contains('show')) closeYouTubePlayer();
+        if ($('#scheduleOverlay').classList.contains('show')) closeSchedule();
+        if ($('#vjOverlay').classList.contains('show')) closeVjLogin();
       }
     });
+
+
+    function openSchedule(uid) {
+      const h = hosts.find(x => x.uid === uid);
+      if (!h) return;
+
+      $('#scheduleTitle').textContent = `${h.name} Schedule`;
+      $('#scheduleView').textContent = h.schedule || 'Schedule coming soon.';
+      $('#scheduleOverlay').classList.add('show');
+    }
+
+    function closeSchedule() {
+      $('#scheduleOverlay').classList.remove('show');
+    }
+
+    function openVjLogin() {
+      $('#vjOverlay').classList.add('show');
+
+      if (loggedInVj) {
+        $('#vjLoginCard').style.display = 'none';
+        $('#vjDashboard').classList.add('show');
+        loadVjDashboard();
+      } else {
+        $('#vjLoginCard').style.display = 'block';
+        $('#vjDashboard').classList.remove('show');
+      }
+    }
+
+    function closeVjLogin() {
+      $('#vjOverlay').classList.remove('show');
+    }
+
+    function getLoggedInVjHost() {
+      if (!loggedInVj) return null;
+      return hosts.find(h => String(h.id || '').toUpperCase() === String(loggedInVj.vjId || '').toUpperCase());
+    }
+
+    function loadVjDashboard() {
+      const h = getLoggedInVjHost();
+
+      if (!h) {
+        toast('ไม่พบ VJ ที่ผูกกับ Login นี้');
+        return;
+      }
+
+      $('#vjDashTitle').textContent = `${h.name} Schedule`;
+      $('#vjDashSub').textContent = `Linked VJ ID: ${h.id}`;
+      $('#vjScheduleInput').value = h.schedule || '';
+    }
+
+    function saveVjSchedule() {
+      const h = getLoggedInVjHost();
+
+      if (!h) {
+        toast('ไม่พบ VJ ที่ผูกกับ Login นี้');
+        return;
+      }
+
+      const newSchedule = $('#vjScheduleInput').value.trim() || 'Schedule coming soon.';
+
+      hosts = hosts.map(item => {
+        if (item.uid === h.uid) {
+          return { ...item, schedule: newSchedule };
+        }
+        return item;
+      });
+
+      saveHosts();
+      selectedUid = h.uid;
+      renderAll();
+      toast('VJ Schedule updated');
+      openSchedule(h.uid);
+    }
+
+    $('#vjOpenBtn').addEventListener('click', openVjLogin);
+    $('#vjLoginCloseBtn').addEventListener('click', closeVjLogin);
+    $('#vjDashCloseBtn').addEventListener('click', closeVjLogin);
+    $('#scheduleCloseBtn').addEventListener('click', closeSchedule);
+
+    $('#scheduleOverlay').addEventListener('click', e => {
+      if (e.target === $('#scheduleOverlay')) closeSchedule();
+    });
+
+    $('#vjOverlay').addEventListener('click', e => {
+      if (e.target === $('#vjOverlay')) closeVjLogin();
+    });
+
+    $('#vjLoginForm').addEventListener('submit', e => {
+      e.preventDefault();
+
+      const username = $('#vjLoginUser').value.trim();
+      const password = $('#vjLoginPass').value;
+      const account = VJ_ACCOUNTS[username];
+
+      if (!account || account.password !== password) {
+        toast('Invalid VJ credential');
+        return;
+      }
+
+      loggedInVj = {
+        username,
+        vjId: account.vjId
+      };
+
+      $('#vjLoginCard').style.display = 'none';
+      $('#vjDashboard').classList.add('show');
+      loadVjDashboard();
+      toast('VJ login successful');
+    });
+
+    $('#vjLogoutBtn').addEventListener('click', () => {
+      loggedInVj = null;
+      $('#vjLoginPass').value = '';
+      $('#vjDashboard').classList.remove('show');
+      $('#vjLoginCard').style.display = 'block';
+      toast('VJ logged out');
+    });
+
+    $('#vjSaveScheduleBtn').addEventListener('click', saveVjSchedule);
 
     $$('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
