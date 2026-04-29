@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vibie Live — Cloudy Crew Admin CMS v5 Fixed</title>
+  <title>Vibie Live — Cloudy Crew Admin CMS v6 YouTube</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -868,6 +868,80 @@
       line-height: 1.6;
     }
 
+
+    .youtube-btn {
+      background: linear-gradient(135deg, #ff4d6d, #ff0033);
+      color: #fff;
+      border-color: rgba(255,80,110,.45);
+      box-shadow: 0 12px 34px rgba(255,0,55,.22);
+    }
+
+    .youtube-btn:hover {
+      background: linear-gradient(135deg, #ff6680, #ff1644);
+    }
+
+    .media-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 180;
+      background: rgba(3, 7, 18, .82);
+      backdrop-filter: blur(18px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .media-overlay.show {
+      display: flex;
+    }
+
+    .media-modal {
+      width: min(980px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 84% 10%, rgba(255,79,119,.13), transparent 30%),
+        radial-gradient(circle at 14% 16%, rgba(144,200,255,.13), transparent 34%),
+        rgba(8, 15, 32, .94);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .media-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+    }
+
+    .media-head b {
+      font-size: 18px;
+    }
+
+    .media-head small {
+      color: var(--muted2);
+      font-weight: 800;
+    }
+
+    .media-frame-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+
+    .media-frame-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
     .toast {
       position: fixed;
       left: 50%;
@@ -1060,6 +1134,7 @@
                 <button class="action primary" onclick="toast('ติดตามแล้ว ✨')">＋ Follow</button>
                 <button class="action" onclick="toast('เปิดตารางไลฟ์')">📅 Schedule</button>
                 <button class="action" onclick="toast('ส่งของขวัญแล้ว 🎁')">🎁 Send Gift</button>
+                <button class="action youtube-btn" id="youtubeBtn" type="button" style="display:none;">▶ YouTube</button>
               </div>
             </div>
 
@@ -1203,6 +1278,11 @@
               </div>
 
               <div class="field full">
+                <label>YouTube URL</label>
+                <input id="youtubeInput" placeholder="https://youtu.be/bvTDFZGQKP4" />
+              </div>
+
+              <div class="field full">
                 <label>Bio</label>
                 <textarea id="bioInput" placeholder="Short profile description"></textarea>
               </div>
@@ -1248,6 +1328,28 @@
     </div>
   </div>
 
+
+  <div class="media-overlay" id="mediaOverlay">
+    <div class="media-modal">
+      <div class="media-head">
+        <div>
+          <b id="mediaTitle">YouTube Player</b><br>
+          <small>เล่นคลิปภายในหน้าเว็บ โดยไม่ออกจาก website</small>
+        </div>
+        <button class="btn small" id="mediaCloseBtn">Close</button>
+      </div>
+      <div class="media-frame-wrap">
+        <iframe
+          id="youtubeFrame"
+          title="YouTube video player"
+          src=""
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast">Done</div>
 
   <script>
@@ -1272,7 +1374,8 @@
         followers: '2.4M+',
         views: '8.9M+',
         hours: '1.8K+',
-        rating: '5.0'
+        rating: '5.0',
+        youtube: ''
       },
       {
         uid: cryptoId(),
@@ -1290,7 +1393,8 @@
         followers: '3.1M+',
         views: '11.2M+',
         hours: '2.3K+',
-        rating: '5.0'
+        rating: '5.0',
+        youtube: 'https://youtu.be/bvTDFZGQKP4'
       },
       {
         uid: cryptoId(),
@@ -1308,7 +1412,8 @@
         followers: '1.9M+',
         views: '7.4M+',
         hours: '1.4K+',
-        rating: '5.0'
+        rating: '5.0',
+        youtube: ''
       }
     ];
 
@@ -1419,6 +1524,16 @@
       $('#views').textContent = h.views || '—';
       $('#hours').textContent = h.hours || '—';
       $('#rating').textContent = h.rating || '5.0';
+
+      const youtubeBtn = $('#youtubeBtn');
+      if (h.youtube) {
+        youtubeBtn.style.display = 'inline-flex';
+        youtubeBtn.onclick = () => openYouTubePlayer(h.youtube, h.name);
+      } else {
+        youtubeBtn.style.display = 'none';
+        youtubeBtn.onclick = null;
+      }
+
       $('#tags').innerHTML = (h.tags || []).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('');
 
       const img = $('#profileImage');
@@ -1497,6 +1612,7 @@
       $('#viewsInput').value = h.views || '';
       $('#hoursInput').value = h.hours || '';
       $('#ratingInput').value = h.rating || '';
+      $('#youtubeInput').value = h.youtube || '';
       $('#bioInput').value = h.bio || '';
       $('#tagsInput').value = (h.tags || []).join(', ');
       const bannerPreview = $('#bannerPreview');
@@ -1540,6 +1656,7 @@
       $('#agencyInput').value = 'Cloudy';
       $('#crewInput').value = 'Cloudy Crew';
       $('#themeInput').value = 'blue';
+      $('#youtubeInput').value = '';
       $('#bannerPreview').removeAttribute('src');
       $('#profilePreview').removeAttribute('src');
       tempBanner = '';
@@ -1686,7 +1803,8 @@
         followers: $('#followersInput').value.trim() || '—',
         views: $('#viewsInput').value.trim() || '—',
         hours: $('#hoursInput').value.trim() || '—',
-        rating: $('#ratingInput').value.trim() || '5.0'
+        rating: $('#ratingInput').value.trim() || '5.0',
+        youtube: $('#youtubeInput').value.trim()
       };
 
       if (!record.name || !record.id) {
@@ -1706,6 +1824,62 @@
       saveHosts();
       renderAll();
       clearForm();
+    });
+
+
+    function getYouTubeEmbedUrl(url) {
+      if (!url) return '';
+
+      let videoId = '';
+
+      try {
+        const cleanUrl = url.trim();
+
+        if (cleanUrl.includes('youtu.be/')) {
+          videoId = cleanUrl.split('youtu.be/')[1].split(/[?&/]/)[0];
+        } else if (cleanUrl.includes('youtube.com/watch')) {
+          const u = new URL(cleanUrl);
+          videoId = u.searchParams.get('v') || '';
+        } else if (cleanUrl.includes('youtube.com/embed/')) {
+          videoId = cleanUrl.split('youtube.com/embed/')[1].split(/[?&/]/)[0];
+        } else {
+          videoId = cleanUrl;
+        }
+      } catch (e) {
+        videoId = url.trim();
+      }
+
+      videoId = videoId.replace(/[^a-zA-Z0-9_-]/g, '');
+      return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0` : '';
+    }
+
+    function openYouTubePlayer(url, hostName) {
+      const embedUrl = getYouTubeEmbedUrl(url);
+
+      if (!embedUrl) {
+        toast('YouTube URL ไม่ถูกต้อง');
+        return;
+      }
+
+      $('#mediaTitle').textContent = `${hostName} · YouTube`;
+      $('#youtubeFrame').src = embedUrl;
+      $('#mediaOverlay').classList.add('show');
+    }
+
+    function closeYouTubePlayer() {
+      $('#mediaOverlay').classList.remove('show');
+      $('#youtubeFrame').src = '';
+    }
+
+    $('#mediaCloseBtn').addEventListener('click', closeYouTubePlayer);
+    $('#mediaOverlay').addEventListener('click', e => {
+      if (e.target === $('#mediaOverlay')) closeYouTubePlayer();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if ($('#mediaOverlay').classList.contains('show')) closeYouTubePlayer();
+      }
     });
 
     $$('.tab').forEach(tab => {
