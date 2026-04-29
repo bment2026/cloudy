@@ -153,7 +153,7 @@
     .profile-layout{display:grid;grid-template-columns:430px 1fr;gap:22px;align-items:stretch}
     .host-list{display:grid;gap:16px}
     .host-card{
-      position:relative;height:220px;border-radius:28px;overflow:hidden;cursor:pointer;
+      position:relative;aspect-ratio:2/1;height:auto;border-radius:28px;overflow:hidden;cursor:pointer;
       border:1px solid var(--line2);background:rgba(255,255,255,.05);box-shadow:0 18px 60px rgba(0,0,0,.25);
       transition:.35s cubic-bezier(.2,.9,.2,1);isolation:isolate;
     }
@@ -191,8 +191,8 @@
 
     .footer{margin-top:40px;border-top:1px solid rgba(255,255,255,.08);padding:34px 0;color:var(--muted2);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer b{color:#fff}
 
-    @media (max-width:1100px){.hero-grid,.profile-layout{grid-template-columns:1fr}.hero-art{min-height:440px}.profile-content{grid-template-columns:1fr}.profile-photo{min-height:520px;order:-1}.profile-photo::before{background:linear-gradient(180deg,rgba(7,12,25,.05),rgba(7,12,25,.88))}.host-list{grid-template-columns:repeat(3,1fr)}.host-card{height:260px}.host-card .mini-name{display:none}.stats{grid-template-columns:repeat(2,1fr)}}
-    @media (max-width:760px){.wrap,.topbar{width:min(100% - 22px,1440px)}.topbar{top:8px}.nav{display:none}.pill-btn:not(.primary){display:none}.hero{padding-top:48px}.hero-art{min-height:390px}.fc1,.fc2,.fc3{width:42%;height:280px}.fc2{left:30%;bottom:60px}.fc3{right:18px}.fc1{left:18px}.section-head{display:block}.filter-tabs{margin-top:18px}.host-list{grid-template-columns:1fr}.host-card{height:360px}.profile-info{padding:28px 20px}.info-grid{grid-template-columns:1fr}.profile-photo{min-height:460px}.metrics{position:relative;right:auto;bottom:auto;width:auto;margin:14px;grid-template-columns:repeat(2,1fr)}.footer{display:block;text-align:center}.footer div:last-child{margin-top:12px}}
+    @media (max-width:1100px){.hero-grid,.profile-layout{grid-template-columns:1fr}.hero-art{min-height:440px}.profile-content{grid-template-columns:1fr}.profile-photo{min-height:520px;order:-1}.profile-photo::before{background:linear-gradient(180deg,rgba(7,12,25,.05),rgba(7,12,25,.88))}.host-list{grid-template-columns:repeat(3,1fr)}.host-card{height:auto}.host-card .mini-name{display:none}.stats{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:760px){.wrap,.topbar{width:min(100% - 22px,1440px)}.topbar{top:8px}.nav{display:none}.pill-btn:not(.primary){display:none}.hero{padding-top:48px}.hero-art{min-height:390px}.fc1,.fc2,.fc3{width:42%;height:280px}.fc2{left:30%;bottom:60px}.fc3{right:18px}.fc1{left:18px}.section-head{display:block}.filter-tabs{margin-top:18px}.host-list{grid-template-columns:1fr}.host-card{height:auto}.profile-info{padding:28px 20px}.info-grid{grid-template-columns:1fr}.profile-photo{min-height:460px}.metrics{position:relative;right:auto;bottom:auto;width:auto;margin:14px;grid-template-columns:repeat(2,1fr)}.footer{display:block;text-align:center}.footer div:last-child{margin-top:12px}}
   </style>
 </head>
 <body>
@@ -223,9 +223,9 @@
         </div>
         <div class="hero-art" aria-hidden="true">
           <svg class="glow-heart" viewBox="0 0 220 190" fill="none"><path d="M108 166C91 151 24 96 24 54c0-23 17-39 38-39 21 0 34 15 45 30 11-15 25-30 46-30 21 0 38 16 38 39 0 42-67 97-83 112z" stroke="rgba(210,230,255,.85)" stroke-width="10"/><path d="M64 50l45 77 22-48 18 29 35-1" stroke="rgba(185,149,255,.9)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div class="floating-card fc1"><img src="nana.png" alt="Lady Nana clean portrait" /></div>
-          <div class="floating-card fc2"><img src="bankky.png" alt="Bankky clean portrait" /></div>
-          <div class="floating-card fc3"><img src="eve.png" alt="Iib clean portrait" /></div>
+          <div class="floating-card fc1"><img src="banner_nana.png" alt="Lady Nana clean banner" /></div>
+          <div class="floating-card fc2"><img src="banner_bankky.png" alt="Bankky clean banner" /></div>
+          <div class="floating-card fc3"><img src="banner_eve.png" alt="Iib clean banner" /></div>
         </div>
       </div>
     </section>
@@ -238,9 +238,9 @@
 
       <div id="profile" class="profile-layout">
         <div class="host-list">
-          <article class="host-card active" style="--accent:var(--blue);--pos:72% 34%" data-key="ladynana" data-theme="blue"><img src="nana.png" alt="Lady Nana"/><div class="mini-name">Selected<b>Lady Nana</b></div></article>
-          <article class="host-card" style="--accent:var(--pink);--pos:73% 38%" data-key="bankky" data-theme="red"><img src="bankky.png" alt="Bankky"/><div class="mini-name">Featured<b>Bankky</b></div></article>
-          <article class="host-card" style="--accent:var(--blue);--pos:76% 35%" data-key="iib" data-theme="blue"><img src="eve.png" alt="อิ๊บอิ๊บบบ"/><div class="mini-name">Featured<b>อิ๊บอิ๊บบบ</b></div></article>
+          <article class="host-card active" style="--accent:var(--blue);--pos:center center" data-key="ladynana" data-theme="blue"><img src="banner_nana.png" alt="Lady Nana banner"/><div class="mini-name">Selected<b>Lady Nana</b></div></article>
+          <article class="host-card" style="--accent:var(--pink);--pos:center center" data-key="bankky" data-theme="red"><img src="banner_bankky.png" alt="Bankky banner"/><div class="mini-name">Featured<b>Bankky</b></div></article>
+          <article class="host-card" style="--accent:var(--blue);--pos:center center" data-key="iib" data-theme="blue"><img src="banner_eve.png" alt="อิ๊บอิ๊บบบ banner"/><div class="mini-name">Featured<b>อิ๊บอิ๊บบบ</b></div></article>
         </div>
 
         <section class="profile-panel blue" id="profilePanel">
