@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vibie Live — Cloudy Crew Admin CMS v8 VJ Schedule</title>
+  <title>Vibie Live — Cloudy Crew Admin CMS v9 Live Button</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -869,6 +869,112 @@
     }
 
 
+
+    .live-btn {
+      background: linear-gradient(135deg, #9dffdd, #48d6ff 45%, #8f72ff);
+      color: #06101e;
+      border-color: rgba(157,255,221,.48);
+      box-shadow: 0 14px 38px rgba(72,214,255,.24), 0 0 24px rgba(157,255,221,.14);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .live-btn::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ff214f;
+      box-shadow: 0 0 14px rgba(255,33,79,.9);
+      display: inline-block;
+      margin-right: 4px;
+      animation: livePulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.55); opacity: .55; }
+    }
+
+    .live-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 175;
+      background: rgba(3, 7, 18, .82);
+      backdrop-filter: blur(18px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .live-overlay.show {
+      display: flex;
+    }
+
+    .live-modal {
+      width: min(1180px, 100%);
+      height: min(780px, calc(100vh - 36px));
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 84% 10%, rgba(157,255,221,.13), transparent 30%),
+        radial-gradient(circle at 14% 16%, rgba(144,200,255,.13), transparent 34%),
+        rgba(8, 15, 32, .95);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .live-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+    }
+
+    .live-head b {
+      font-size: 18px;
+    }
+
+    .live-head small {
+      color: var(--muted2);
+      font-weight: 800;
+    }
+
+    .live-frame-wrap {
+      position: relative;
+      flex: 1;
+      background: #050914;
+    }
+
+    .live-frame-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #050914;
+    }
+
+    .live-fallback {
+      display: none;
+      padding: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+      border-top: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+    }
+
+    .live-fallback a {
+      color: var(--green);
+      font-weight: 900;
+    }
+
     .youtube-btn {
       background: linear-gradient(135deg, #ff4d6d, #ff0033);
       color: #fff;
@@ -1233,6 +1339,7 @@
                 <button class="action primary" onclick="toast('ติดตามแล้ว ✨')">＋ Follow</button>
                 <button class="action schedule-btn" id="scheduleBtn" type="button">📅 Schedule</button>
                 <button class="action" onclick="toast('ส่งของขวัญแล้ว 🎁')">🎁 Send Gift</button>
+                <button class="action live-btn" id="liveBtn" type="button" style="display:none;">LIVE</button>
                 <button class="action youtube-btn" id="youtubeBtn" type="button" style="display:none;">▶ YouTube</button>
               </div>
             </div>
@@ -1382,6 +1489,11 @@
               </div>
 
               <div class="field full">
+                <label>Live URL</label>
+                <input id="liveInput" placeholder="https://vibie.live/live/01kqd65y861ykeverekj3hjs6k" />
+              </div>
+
+              <div class="field full">
                 <label>Schedule</label>
                 <textarea id="scheduleInput" placeholder="Monday - Friday 8:00 PM - 11:00 PM"></textarea>
               </div>
@@ -1500,6 +1612,35 @@
     </div>
   </div>
 
+
+  <div class="live-overlay" id="liveOverlay">
+    <div class="live-modal">
+      <div class="live-head">
+        <div>
+          <b id="liveTitle">Live Player</b><br>
+          <small>เปิดหน้า Live ภายใน website โดยไม่ออกจากจอ</small>
+        </div>
+        <div class="actions">
+          <a class="btn small" id="liveOpenNewTab" href="#" target="_blank" rel="noopener">Open New Tab</a>
+          <button class="btn small" id="liveCloseBtn">Close</button>
+        </div>
+      </div>
+      <div class="live-frame-wrap">
+        <iframe
+          id="liveFrame"
+          title="Vibie Live player"
+          src=""
+          allow="camera; microphone; autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="live-fallback" id="liveFallback">
+        ถ้าหน้า Live ไม่แสดง อาจเป็นเพราะเว็บไซต์ปลายทางไม่อนุญาตให้เปิดผ่าน iframe.
+        ให้กด <a id="liveFallbackLink" href="#" target="_blank" rel="noopener">Open New Tab</a>
+      </div>
+    </div>
+  </div>
+
   <div class="media-overlay" id="mediaOverlay">
     <div class="media-modal">
       <div class="media-head">
@@ -1574,6 +1715,7 @@
         hours: '2.3K+',
         rating: '5.0',
         youtube: 'https://youtu.be/bvTDFZGQKP4',
+        liveUrl: 'https://vibie.live/live/01kqd65y861ykeverekj3hjs6k',
         schedule: 'Monday - Friday\n8:00 PM - 11:00 PM\nSpecial live: Saturday 9:00 PM'
       },
       {
@@ -1643,6 +1785,10 @@
 
           if (!h.schedule) {
             h.schedule = 'Monday - Friday\n8:00 PM - 11:00 PM\nSpecial live: Saturday 9:00 PM';
+          }
+
+          if (!h.liveUrl) {
+            h.liveUrl = 'https://vibie.live/live/01kqd65y861ykeverekj3hjs6k';
           }
         }
 
@@ -1716,6 +1862,17 @@
       $('#views').textContent = h.views || '—';
       $('#hours').textContent = h.hours || '—';
       $('#rating').textContent = h.rating || '5.0';
+
+      const liveBtn = $('#liveBtn');
+      if (liveBtn) {
+        if (h.liveUrl) {
+          liveBtn.style.display = 'inline-flex';
+          liveBtn.onclick = () => openLivePlayer(h.liveUrl, h.name);
+        } else {
+          liveBtn.style.display = 'none';
+          liveBtn.onclick = null;
+        }
+      }
 
       const youtubeBtn = $('#youtubeBtn');
       if (h.youtube) {
@@ -1810,6 +1967,7 @@
       $('#hoursInput').value = h.hours || '';
       $('#ratingInput').value = h.rating || '';
       $('#youtubeInput').value = h.youtube || '';
+      $('#liveInput').value = h.liveUrl || '';
       $('#scheduleInput').value = h.schedule || '';
       $('#bioInput').value = h.bio || '';
       $('#tagsInput').value = (h.tags || []).join(', ');
@@ -1855,6 +2013,7 @@
       $('#crewInput').value = 'Cloudy Crew';
       $('#themeInput').value = 'blue';
       $('#youtubeInput').value = '';
+      $('#liveInput').value = '';
       $('#scheduleInput').value = '';
       $('#bannerPreview').removeAttribute('src');
       $('#profilePreview').removeAttribute('src');
@@ -2004,6 +2163,7 @@
         hours: $('#hoursInput').value.trim() || '—',
         rating: $('#ratingInput').value.trim() || '5.0',
         youtube: $('#youtubeInput').value.trim(),
+        liveUrl: $('#liveInput').value.trim(),
         schedule: $('#scheduleInput').value.trim() || 'Schedule coming soon.'
       };
 
@@ -2026,6 +2186,31 @@
       clearForm();
     });
 
+
+
+    function openLivePlayer(url, hostName) {
+      if (!url) {
+        toast('ยังไม่มี Live URL');
+        return;
+      }
+
+      $('#liveTitle').textContent = `${hostName} · Live`;
+      $('#liveFrame').src = url;
+      $('#liveOpenNewTab').href = url;
+      $('#liveFallbackLink').href = url;
+      $('#liveFallback').style.display = 'block';
+      $('#liveOverlay').classList.add('show');
+    }
+
+    function closeLivePlayer() {
+      $('#liveOverlay').classList.remove('show');
+      $('#liveFrame').src = '';
+    }
+
+    $('#liveCloseBtn').addEventListener('click', closeLivePlayer);
+    $('#liveOverlay').addEventListener('click', e => {
+      if (e.target === $('#liveOverlay')) closeLivePlayer();
+    });
 
     function getYouTubeEmbedUrl(url) {
       if (!url) return '';
@@ -2078,6 +2263,7 @@
 
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
+        if ($('#liveOverlay').classList.contains('show')) closeLivePlayer();
         if ($('#mediaOverlay').classList.contains('show')) closeYouTubePlayer();
         if ($('#scheduleOverlay').classList.contains('show')) closeSchedule();
         if ($('#vjOverlay').classList.contains('show')) closeVjLogin();
