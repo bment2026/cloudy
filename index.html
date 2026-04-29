@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vibie Live — Cloudy Crew Admin CMS v4</title>
+  <title>Vibie Live — Cloudy Crew Admin CMS v5 Fixed</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -1241,7 +1241,7 @@
           </form>
 
           <div class="admin-note">
-            หมายเหตุ: เวอร์ชันนี้เป็นระบบ Admin แบบ Static Website Demo สำหรับ GitHub Pages ข้อมูลจะเก็บในเครื่องของผู้ใช้ผ่าน localStorage เท่านั้น ไม่ใช่ระบบ Login จริงแบบปลอดภัยสำหรับ production
+            หมายเหตุ: เวอร์ชันนี้แก้ Banner Preview และแยกรูป Bankky ชัดเจน: ซ้ายใช้ banner_bannky2.png / ขวาใช้ bankky.png หากยังเห็นรูปเก่า ให้กด Reset Demo Data 1 ครั้ง หรือ Ctrl+F5
           </div>
         </div>
       </div>
@@ -1331,6 +1331,29 @@
         if (stored) return JSON.parse(stored);
       } catch (e) {}
       return defaultHosts;
+    }
+
+    function normalizeHostsData() {
+      // Migration/fix for old browser localStorage.
+      // Bankky LEFT card/banner should use banner_bannky2.png.
+      // Bankky RIGHT profile should use bankky.png, not the banner image.
+      hosts = hosts.map(h => {
+        const isBankky = String(h.id || '').toUpperCase() === 'BANKKY' || String(h.name || '').toLowerCase() === 'bankky';
+
+        if (isBankky) {
+          if (!h.banner || String(h.banner).includes('banner_bankky') || String(h.banner).includes('banner_Bankky')) {
+            h.banner = './banner_bannky2.png';
+          }
+
+          if (!h.profile || String(h.profile).includes('banner_bankky') || String(h.profile).includes('banner_bannky')) {
+            h.profile = './bankky.png';
+          }
+        }
+
+        return h;
+      });
+
+      saveHosts();
     }
 
     function saveHosts() {
@@ -1476,8 +1499,21 @@
       $('#ratingInput').value = h.rating || '';
       $('#bioInput').value = h.bio || '';
       $('#tagsInput').value = (h.tags || []).join(', ');
-      $('#bannerPreview').src = h.banner || '';
-      $('#profilePreview').src = h.profile || '';
+      const bannerPreview = $('#bannerPreview');
+      const profilePreview = $('#profilePreview');
+
+      bannerPreview.onerror = function () {
+        this.onerror = null;
+        this.src = h.profile || './banner_nana.png';
+      };
+      profilePreview.onerror = function () {
+        this.onerror = null;
+        this.src = h.banner || './nana.png';
+      };
+
+      bannerPreview.src = h.banner || '';
+      profilePreview.src = h.profile || '';
+
       tempBanner = h.banner || '';
       tempProfile = h.profile || '';
       toast('Loaded VJ for update');
@@ -1595,12 +1631,20 @@
 
     $('#bannerInput').addEventListener('change', async e => {
       tempBanner = await readFileAsDataURL(e.target.files[0]);
-      if (tempBanner) $('#bannerPreview').src = tempBanner;
+      if (tempBanner) {
+        const preview = $('#bannerPreview');
+        preview.onerror = null;
+        preview.src = tempBanner;
+      }
     });
 
     $('#profileInput').addEventListener('change', async e => {
       tempProfile = await readFileAsDataURL(e.target.files[0]);
-      if (tempProfile) $('#profilePreview').src = tempProfile;
+      if (tempProfile) {
+        const preview = $('#profilePreview');
+        preview.onerror = null;
+        preview.src = tempProfile;
+      }
     });
 
     $('#vjForm').addEventListener('submit', async e => {
@@ -1612,8 +1656,19 @@
       const bannerFile = $('#bannerInput').files[0];
       const profileFile = $('#profileInput').files[0];
 
-      const bannerData = bannerFile ? await readFileAsDataURL(bannerFile) : (tempBanner || existing?.banner || './banner_nana.png');
-      const profileData = profileFile ? await readFileAsDataURL(profileFile) : (tempProfile || existing?.profile || './nana.png');
+      let bannerData = bannerFile ? await readFileAsDataURL(bannerFile) : (existing?.banner || tempBanner || './banner_nana.png');
+      let profileData = profileFile ? await readFileAsDataURL(profileFile) : (existing?.profile || tempProfile || './nana.png');
+
+      const formIdValue = $('#idInput').value.trim().toUpperCase();
+      const formNameValue = $('#nameInput').value.trim().toLowerCase();
+
+      // Safety rule: when saving Bankky, only the left/banner image should use banner_bannky2.png.
+      // The right/profile image should stay bankky.png unless a new profile file is uploaded.
+      if ((formIdValue === 'BANKKY' || formNameValue === 'bankky') && !profileFile) {
+        if (!profileData || String(profileData).includes('banner_bankky') || String(profileData).includes('banner_bannky')) {
+          profileData = './bankky.png';
+        }
+      }
 
       const record = {
         uid: editId || cryptoId(),
@@ -1661,6 +1716,7 @@
       });
     });
 
+    normalizeHostsData();
     renderAll();
   </script>
 </body>
