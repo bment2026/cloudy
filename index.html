@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vibie Live — Cloudy Crew Admin CMS v6 YouTube</title>
+  <title>Vibie Live — Cloudy Crew Admin CMS v7 YouTube Visible</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -1452,6 +1452,11 @@
 
           if (!h.profile || String(h.profile).includes('banner_bankky') || String(h.profile).includes('banner_bannky')) {
             h.profile = './bankky.png';
+          }
+
+          // Add YouTube to old cached Bankky data if missing.
+          if (!h.youtube) {
+            h.youtube = 'https://youtu.be/bvTDFZGQKP4';
           }
         }
 
